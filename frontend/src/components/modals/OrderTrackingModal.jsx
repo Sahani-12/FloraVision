@@ -64,30 +64,41 @@ export default function OrderTrackingModal({
     setErrorMsg('');
     try {
       const clean = queryStr.trim();
-      const res = await fetch(`http://localhost:5000/api/orders/track/${encodeURIComponent(clean)}`);
-      const data = await res.json();
-      if (data.success && data.order) {
-        setActiveOrder(data.order);
-        setActiveTab('tracker');
-      } else {
-        // Fallback local storage check
+      let foundOrder = null;
+
+      // 1. Try Backend HTTP API
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/track/${encodeURIComponent(clean)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.order) {
+            foundOrder = data.order;
+          }
+        }
+      } catch {
+        // Silent fallback to local storage
+      }
+
+      // 2. Search local storage orders if backend not reachable or returned null
+      if (!foundOrder) {
         const saved = localStorage.getItem('flora_orders');
         if (saved) {
           const list = JSON.parse(saved);
-          const found = list.find(o => 
+          foundOrder = list.find(o => 
             (o.orderId || o.orderNumber || o._id) === clean ||
-            (o.shippingAddress && o.shippingAddress.phone === clean)
+            (o.shippingAddress && (o.shippingAddress.phone === clean || o.shippingAddress.phone?.includes(clean)))
           );
-          if (found) {
-            setActiveOrder(found);
-            setActiveTab('tracker');
-            return;
-          }
         }
-        setErrorMsg(data.message || 'No matching order found. Please check Order ID or Mobile Number.');
+      }
+
+      if (foundOrder) {
+        setActiveOrder(foundOrder);
+        setActiveTab('tracker');
+      } else {
+        setErrorMsg('No matching order found for this Order ID or Mobile Number.');
       }
     } catch {
-      setErrorMsg('Could not connect to tracking server. Please check your connection.');
+      setErrorMsg('No matching order found. Please verify your Order ID.');
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,9 @@
 // Frontend API Service Layer with localStorage & Backend HTTP support
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 
+  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? 'https://floravision-backend.onrender.com/api' 
+    : 'http://localhost:5000/api');
 
 export const authService = {
   // Login User

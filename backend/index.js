@@ -37,15 +37,17 @@ app.use(helmet({
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
   'http://localhost:3000',
-  'http://localhost:5174'
+  'http://localhost:5174',
+  'https://floravision.vercel.app',
+  'https://floravision-frontend.onrender.com'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app') || origin.includes('onrender.com')) {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive in dev
+      callback(null, true);
     }
   },
   credentials: true

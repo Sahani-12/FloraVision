@@ -82,16 +82,10 @@ export default function App() {
   const userKey = currentUser ? (currentUser.id || currentUser._id || currentUser.email) : 'guest';
 
   useEffect(() => {
-    const adminUser = {
-      id: 'admin_demo_1',
-      name: 'FloraVision Admin',
-      email: 'admin@floravision.com',
-      phone: '+91 99999 88888',
-      role: 'admin',
-      token: 'demo_admin_token'
-    };
-    localStorage.setItem('flora_user', JSON.stringify(adminUser));
-    setCurrentUser(adminUser);
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+    }
     loadPlants();
   }, []);
 
