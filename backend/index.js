@@ -83,10 +83,15 @@ app.get('/', (req, res) => {
 
 // API Routes Mounting
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes); // Route alias for direct /auth requests
 app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
 app.use('/api/products', plantRoutes);
+app.use('/products', plantRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/admin', adminRoutes);
